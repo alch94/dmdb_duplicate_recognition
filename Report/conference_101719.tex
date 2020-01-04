@@ -11,53 +11,21 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Conference Paper Title*\\
+\title{Duplicate recognition for restaurant dataset*\\
 {\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
 should not be used}
-\thanks{Identify applicable funding agency here. If none, delete this.}
 }
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{3\textsuperscript{rd} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{4\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{5\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
-\and
-\IEEEauthorblockN{6\textsuperscript{th} Given Name Surname}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Alexander Christoph}
+\IEEEauthorblockA{\textit{OTH Regensburg} \\
+Regensburg, Germany \\
+alexander.christoph@st.oth-regensburg.de}
 }
 
 \maketitle
 
 \begin{abstract}
-This document describes the analysis and removal of duplicates from the restaurants dataset which. The aim is to remove as many duplicates as possible from the dataset. A problem when finding dupicates of restaurants is the format and the different writing of the entries in the data. This problem was already researched by three IEEE members (quelle). Within the research there were made different approaches to remove the duplicates which are described below.
+This document describes the analysis and removal of duplicates from the restaurants dataset. The aim is to remove as many duplicates as possible from the dataset and store the data without duplicates in a cloud hosted mongodb instance. A problem when finding duplicates of restaurants (or nearly any other dataset) is the format and the different writing of the entries in the data. This problem was already researched by several IEEE members (quelle). Within my research there were made different approaches to remove the duplicates which are described below. The accuracy of the results is measured with precision, recall and F-score. After removing the duplicates the cleared dataset is stored into a mongodb cluster so that it can be accessed any time. In this paper I will also describe some techniques which I haven't used in my project but are also very useful. 
 
 \end{abstract}
 
@@ -66,7 +34,24 @@ component, formatting, style, styling, insert
 \end{IEEEkeywords}
 
 \section{Introduction}
-In times where big data gets more and more attraction from the industry it is very important to learn how to deal with it. Especially when it comes to the structure and format of the data. When it comes to big data, it is most of the time a problem that there are duplicates and unclean entries in the dataset which is considered. This is in the nature of big data because most of the time there isn't that much preprocessing happening. To learn how to deal with uncleaned data the restaurants dataset is used. This isn't actually big data but to understand the importance of the preprocessing task it is pretty good because it's considered as a well researched dataset to play with. 
+In times where big data gets more and more attraction from the industry it is very important to learn how to deal with it. Especially when it comes to the structure and format of the data. When looking at big data, it is most of the time a problem that there are duplicates and unclean entries in a dataset. This gives inaccurate results when analyzing or working with this data. That happens because most of the time there isn't that much preprocessing happening and there aren't even checks for a standard data format. To learn how to deal with duplicate data, the restaurants dataset is used. This isn't actually big data, but to understand the importance of the preprocessing task it is pretty good because it's considered as a well researched dataset to play with and compare to the gold standard. 
+
+In my research I've looked into different approaches to detect duplicates and remove them from the dataset. The first approach was to just remove all duplicates that are in the data, this wasn't successful because most of the duplicates have different writings or completely different values in some of the fields. So I started to analyze the data and look for potential duplicates and how to prepare them so that the program can match them. The first step was to remove all special characters and some other unnecessary contents in the different columns. After that I investigated which columns are the most useful when it comes to duplicate detection. 
+
+After researching and removing potential duplicates, I calculated the count for true positives, false positives, true negatives and false negatives of my prediction with the help of the gold standard duplicate dataset which was evaluated by hand. With the help of these metrics I calculated the recall and precision for my result to get a better understanding, how good my evaluations were. As a conclusion the values I got were: 
+\begin{itemize}
+	\item All entries in original dataset: 864
+	\item Detected duplicates (all): 111
+	\item Real duplicates (from gold standard): 112
+	\item True positives: 103
+	\item True negatives: 744
+	\item False positives: 8
+	\item False negatives: 9
+	\item Precision: 0.93
+	\item Recall: 0.92
+\end{itemize}
+
+After the methods are applied and the duplicates are removed it is necessary to store the new dataset somewhere. For this I have choosen mongodb because of it's great compatibility with many programming languages and the low expenses when you want to store data in it. Mongodb could also be used for many preprocessing tasks because of the great aggregation framework that it offers. 
 
 
 
