@@ -39,7 +39,7 @@ def remove_special_characters(restaurant_data):
 
 def get_duplicates_bool(restaurant_data):
     # Get a Series of all duplicate entries
-    address_city_phone = ['address', 'city', 'phone']
+    address_city_phone =['id']# ['address', 'city', 'phone']
     address_name_phone = ['address', 'name', 'phone']
     address_city_name = ['address', 'city', 'name']
     name_city_phone = ['name', 'city', 'phone']

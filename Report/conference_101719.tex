@@ -57,7 +57,11 @@ After researching and removing potential duplicates, I calculated the count for 
 \end{itemize}
 
 After the methods are applied and the duplicates are removed it is necessary to store the new dataset somewhere. For this I have choosen mongodb because of it's great compatibility with many programming languages and the low expenses when you want to store data in it. Mongodb could also be used for many preprocessing tasks because of the great aggregation framework that it offers. 
-\section{The restaurants dataset}
+\section{Why duplicate detection is important}
+Duplicate detection is an important task in data science for several reasons. Often when a data scientist gets data to research it's a problem that it isn't preprocessed and contains wrong or duplicate entries. Detecting and removing these is a hard but important task. When working with unclean data mistakes can happen. For example let's look at the restaurant dataset which is described in \fullref{sec_dataset}. This dataset could be used to recommend restaurants to an user from an application. When the recommendation contains duplicates with even different writing for the same restaurants the user could be confused and stop using our application. Duplicate detection is also important when solving machine learning tasks because most machine learning algorithms can't handle duplicates and give higher priority to dupliacted records which would result in a less accurate machine learning model.
+
+Because of these problems, duplicate detection is such a big topic in the computer science space.
+\section{The restaurants dataset} \label{sec_dataset}
 The restaurants dataset which is researhed in this paper is a .tsv dataset which contains 864 rows of data with six columns. The columns of the dataset are: 
 \begin{itemize}
 	\item id: The unique id of each row
@@ -103,11 +107,12 @@ As a whole there are 112 duplicates in the dataset which were selected by hand.
 
 At first I only looked into the first 100 entries and tried to understand the difference and connections between the different rows and columns. I found out that many noise in the data came from special characters. So I removed every special character except spaces from the four columns that I looked into. Large and lower case letters didn't have to be considered because the whole data was in lower case letters. The received metrics after the first step of the data cleaning pipeline were: 
 \begin{itemize}
+	\item Detected duplicates (all): 86
 	\item True positives: 80
 	\item True negatives: 746
     \item False positives: 6
 	\item False negatives: 32
-	Accuracy 0.96
+	\item Accuracy 0.96
     \item Precision: 0.9302325581395349
 	\item Recall: 0.7142857142857143
 \end{itemize}
@@ -115,7 +120,7 @@ This is quite good for simply removing special characters, but the results can b
 
 The next step of my data cleaning pipeline was to map multiple occurrences of the same city with different writing to as single key. For example there were entries which had "la" as a value and others had "los angeles". After applying this, the metrics were: 
 \begin{itemize}
-	\item Detected duplicates: 106
+	\item Detected duplicates (all): 104
 	\item True positives: 98
 	\item True negatives: 746
 	\item False positives: 6
@@ -136,15 +141,29 @@ So I researched the dataset again and found out that there are more inconsistenc
 \end{itemize}
 After remapping these, the metrics had a big improvement to: 
 \begin{itemize}
-	\item Detected duplicates: 111
+	\item Detected duplicates (all): 111
 	\item True positives: 103
 	\item True negatives: 744
 	\item False positives: 8
 	\item False negatives: 9
+	\item Accuracy: 0.98
 	\item Precision: 0.93
 	\item Recall: 0.92
 \end{itemize}
-These were the final metrics for my research. There are even more ways to improve the duplicate recognition, which will be discussed in the next section \fullref{sec_improvements}
+These were the final metrics for my research which I could archive with a three out of four combination from the columns "name", "address", "city" and "phone". This isn't that bad because they are near the gold standard. But there are also some drawbacks when viewing at these results. The eight false positives that were found are responsible that eight restaurants which aren't duplicates would be considered as such and removed from the data, which isn't good. This issue can be resolved by viewing on the false positives values and change the duplicate selection task so that no false positives emerge. The corresponding values that were matched as false positives have the common ground that the duplicate groups all have the same values for city, name and phone. This issue can be resolved by choosing other combinations of columns which are considered.
+
+When removing the combination of "address", "city" and "phone" for the dupliacte detection, the outcoming metrics are: 
+\begin{itemize}
+	\item Detected duplicates (all): 82
+	\item True positives: 82
+	\item True negatives: 752
+	\item False positives: 0
+	\item False negatives: 30
+	\item Accuracy 0.97
+	\item Precision: 1.0
+	\item Recall: 0.73
+\end{itemize}
+After applying the new column combination the recall got much more bad but there are no more false positives which could break the whole sense of duplicate detection. 
 \section{Potential improvements and other researches} \label{sec_imporvements}
 \section{Conclusion}
 
