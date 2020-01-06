@@ -7,8 +7,13 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{nameref}
+\usepackage{autoref}
+\usepackage{hyperref}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+\newcommand*{\fullref}[1]{\textit{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}}
+
 \begin{document}
 
 \title{Duplicate recognition for restaurant dataset*\\
@@ -52,7 +57,29 @@ After researching and removing potential duplicates, I calculated the count for 
 \end{itemize}
 
 After the methods are applied and the duplicates are removed it is necessary to store the new dataset somewhere. For this I have choosen mongodb because of it's great compatibility with many programming languages and the low expenses when you want to store data in it. Mongodb could also be used for many preprocessing tasks because of the great aggregation framework that it offers. 
+\section{The restaurants dataset}
+The restaurants dataset which is researhed in this paper is a .tsv dataset which contains 864 rows of data with six columns. The columns of the dataset are: 
+\begin{itemize}
+	\item id: The unique id of each row
+	\item name: The name of the restaurant
+	\item address: The address where the restaurant is located
+	\item city: The city of the restaurant
+	\item phone: The phone number of the restaurant
+	\item type: The kind of the restaurant (i.e. french or american)
+\end{itemize}
+In the data there are 122 duplicated restaurants. These duplicates were picked by hand from some researchers to define a gold standard which would be the best possible result after removing all duplicates. The duplicates that occur in the dataset have different deviations from each other. For example some duplicates have a different order of the words in their name field like "the palm" and "palm the". Others have different separators for the phone number like "310/659-9639" and "310-659-9639". Sometimes the city field of the duplicates is a district from a bigger city and sometimes it's the city name itself like "los angeles" and "hollywood". There are even more  different deviations in the dataset as well whose solution to detect them will be discussed later in \fullref{sec_methods} section.
 
+In my research I focused mostly on the columns name, city, address and phone because they have the most useful information when it comes to duplicate detection.The id column was left out because it's only a unique identifier which wouldn't bring a benefit for duplicate recognition. The type column was left out because there are to much restaurants with the same type which would result in an unclean target data record.
+
+Besides of the plain restaurants dataset there is also a dataset given which contains all the duplicates in the data by id. In this duplicate set, there are only two columns, "id1" and "id2" which define the original id and the duplicate id. A dataset without all these duplicates is considered as gold standard. The reached results will be measured to this gold standard.
+\section{Methods used to detect duplicates} \label{sec_methods}
+The research was written in python, a programming language, which is widely used in data science tasks. For my research I mostly used the Python pandas library, which has good data analysis features. 
+
+At first I only looked into the first 100 entries and tried to understand the difference and connections between the different rows and columns. I found out that many noise in the data came from special characters. So I removed every special character except spaces from the four columns that I looked into. Large and lower case letters didn't have to be considered because the whole data was in lower case letters. 
+
+After doing the first step of my data cleaning pipeline I checked for duplicates and found pout that there were already X detected. 
+\section{Potential improvements}
+\section{Other good methods to detect duplicates}
 
 
 \newpage 
