@@ -72,14 +72,81 @@ In the data there are 122 duplicated restaurants. These duplicates were picked b
 In my research I focused mostly on the columns name, city, address and phone because they have the most useful information when it comes to duplicate detection.The id column was left out because it's only a unique identifier which wouldn't bring a benefit for duplicate recognition. The type column was left out because there are to much restaurants with the same type which would result in an unclean target data record.
 
 Besides of the plain restaurants dataset there is also a dataset given which contains all the duplicates in the data by id. In this duplicate set, there are only two columns, "id1" and "id2" which define the original id and the duplicate id. A dataset without all these duplicates is considered as gold standard. The reached results will be measured to this gold standard.
+\section{Metrics used to measure th results}
+To measure the accuracy of results when it comes to duplicate detection there are different metrics that are commonly used. For all these metrics it's important to pre calculate four values with the help of the gold standard data and the archived results: 
+\begin{itemize}
+	\item True positives (TP): The correct classified true entries
+	\item True negatives (TN): The correct classified false entries
+	\item False positives (FP): Incorrect classified true entries
+	\item False negatives (FN): Incorrect classified false entries
+\end{itemize}
+In a gold standard dataset there are no false positives and false negatives.
+
+A first metric that is important is the well known accuracy. 
+\begin{align}
+ accuracy =  \frac{TP + TN}{TP + TN + FP + FN}
+\end{align}
+Only calculating the accuracy isn't enough in this task because the it only gives reliable results when a dataset is balanced. In this case it means that there are as many duplicated entries as non duplicates. As an addition for the accuracy I use two other metrics, precision and recall.
+
+Precision measures the exactness for the minority class by only considering the positive classified entries of the result set. Because of this it is a good measurement for unbalanced data.
+\begin{align}
+	Precision = \frac{TruePositives}{TruePositives + FalsePositives}
+\end{align}
+Recal instead gives the accuracy for the fraction of relevant data.
+\begin{align}
+	Recall = \frac{TruePositives}{TruePositives + FalseNegatives}
+\end{align}
 \section{Methods used to detect duplicates} \label{sec_methods}
 The research was written in python, a programming language, which is widely used in data science tasks. For my research I mostly used the Python pandas library, which has good data analysis features. 
 
-At first I only looked into the first 100 entries and tried to understand the difference and connections between the different rows and columns. I found out that many noise in the data came from special characters. So I removed every special character except spaces from the four columns that I looked into. Large and lower case letters didn't have to be considered because the whole data was in lower case letters. 
+As a whole there are 112 duplicates in the dataset which were selected by hand.
 
-After doing the first step of my data cleaning pipeline I checked for duplicates and found pout that there were already X detected. 
-\section{Potential improvements}
-\section{Other good methods to detect duplicates}
+At first I only looked into the first 100 entries and tried to understand the difference and connections between the different rows and columns. I found out that many noise in the data came from special characters. So I removed every special character except spaces from the four columns that I looked into. Large and lower case letters didn't have to be considered because the whole data was in lower case letters. The received metrics after the first step of the data cleaning pipeline were: 
+\begin{itemize}
+	\item True positives: 80
+	\item True negatives: 746
+    \item False positives: 6
+	\item False negatives: 32
+	Accuracy 0.96
+    \item Precision: 0.9302325581395349
+	\item Recall: 0.7142857142857143
+\end{itemize}
+This is quite good for simply removing special characters, but the results can be optimized more. 
+
+The next step of my data cleaning pipeline was to map multiple occurrences of the same city with different writing to as single key. For example there were entries which had "la" as a value and others had "los angeles". After applying this, the metrics were: 
+\begin{itemize}
+	\item Detected duplicates: 106
+	\item True positives: 98
+	\item True negatives: 746
+	\item False positives: 6
+	\item False negatives: 14
+	\item Accuracy: 0.98
+	\item Precision: 0.94
+	\item Recall: 0.88
+\end{itemize}
+It's noticeable that the results have improved slightly after mapping the citynames. As a next step I removed appendixes from the address column. For this I have chosen to remove everything which occurs after "between", "off", "near", "at" or "in" from thee address string because many addresses had more precise descriptions for the address after the real address. Following up, I decided to remove appendixes of the street number like "1st" to "1" or "2nd" to 2. Then I looked again on the dataset and found out that the columns "address", as well as "name" both sometimes have a direction (like "north" or in short "n") added and sometimes don't, which is very inconsistent. So I removed every occurrence of a direction from this two columns. Neither of these three actions affected the metrics. 
+
+So I researched the dataset again and found out that there are more inconsistencies in the address field. At first I discovered that some numbers in the address were written ass tring and others as numbers. So I mapped these to only represent numbers (i.e. "first" to 1). I also noticed that some words sometimes were written in short in the address column. These were: 
+\begin{itemize}
+	\item los angeles: la
+	\item avenue: ave
+	\item road: rd
+	\item boulevard: blv, blvd
+	\item street: st
+\end{itemize}
+After remapping these, the metrics had a big improvement to: 
+\begin{itemize}
+	\item Detected duplicates: 111
+	\item True positives: 103
+	\item True negatives: 744
+	\item False positives: 8
+	\item False negatives: 9
+	\item Precision: 0.93
+	\item Recall: 0.92
+\end{itemize}
+These were the final metrics for my research. There are even more ways to improve the duplicate recognition, which will be discussed in the next section \fullref{sec_improvements}
+\section{Potential improvements and other researches} \label{sec_imporvements}
+\section{Conclusion}
 
 
 \newpage 
