@@ -10,59 +10,58 @@
 \usepackage{nameref}
 \usepackage{autoref}
 \usepackage{hyperref}
+\usepackage{listings}
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \newcommand*{\fullref}[1]{\textit{\hyperref[{#1}]{\autoref*{#1} \nameref*{#1}}}}
 
 \begin{document}
-
 \title{Duplicate recognition for restaurant dataset*\\
-{\footnotesize \textsuperscript{*}Note: Sub-titles are not captured in Xplore and
-should not be used}
+	{\footnotesize \textsuperscript{*}}
+}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Alexander Christoph}
+	\IEEEauthorblockA{\textit{OTH Regensburg} \\
+		Regensburg, Germany \\
+		alexander.christoph@st.oth-regensburg.de}
 }
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Alexander Christoph}
-\IEEEauthorblockA{\textit{OTH Regensburg} \\
-Regensburg, Germany \\
-alexander.christoph@st.oth-regensburg.de}
-}
 
 \maketitle
 
 \begin{abstract}
-This document describes the analysis and removal of duplicates from the restaurants dataset. The aim is to remove as many duplicates as possible from the dataset and store the data without duplicates in a cloud hosted mongodb instance. A problem when finding duplicates of restaurants (or nearly any other dataset) is the format and the different writing of the entries in the data. This problem was already researched by several IEEE members (quelle). Within my research there were made different approaches to remove the duplicates which are described below. The accuracy of the results is measured with precision, recall and F-score. After removing the duplicates the cleared dataset is stored into a mongodb cluster so that it can be accessed any time. In this paper I will also describe some techniques which I haven't used in my project but are also very useful. 
-
+This document describes the analysis and removal of duplicates from the restaurants dataset. The aim is to remove as many duplicates as possible from the dataset and store the data without duplicates in a cloud hosted mongodb instance. A problem when finding duplicates of restaurants (or nearly any other dataset) is the format and the different writing of the entries in the data. This problem was already researched by several IEEE members (quelle). Within my research I used different approaches to preprocess and detect duplicates. The accuracy of my results is measured with the metrics accuracy, precision and recall. After removing the duplicates the cleared dataset is stored into a mongodb cluster so that it can be accessed any time.
 \end{abstract}
 
 \begin{IEEEkeywords}
-component, formatting, style, styling, insert
+duplicate detection, restaurant dataset
 \end{IEEEkeywords}
 
 \section{Introduction}
-In times where big data gets more and more attraction from the industry it is very important to learn how to deal with it. Especially when it comes to the structure and format of the data. When looking at big data, it is most of the time a problem that there are duplicates and unclean entries in a dataset. This gives inaccurate results when analyzing or working with this data. That happens because most of the time there isn't that much preprocessing happening and there aren't even checks for a standard data format. To learn how to deal with duplicate data, the restaurants dataset is used. This isn't actually big data, but to understand the importance of the preprocessing task it is pretty good because it's considered as a well researched dataset to play with and compare to the gold standard. 
+In times where big data gets more and more attraction from the industry it is very important to learn how to deal with it. Especially when it comes to the structure and format of the data. When looking at big data, it is most of the time a problem that there are duplicates and unclean entries in a dataset. This gives inaccurate results when analyzing or working with that data. This happens because most of the time there isn't that much preprocessing happening and there aren't even checks for a standard data format. To learn how to deal with duplicate data, the restaurants dataset is used. This isn't actually big data, but to understand the importance of the preprocessing task it is pretty good because it's considered a well researched dataset to play with and compare to the gold standard. 
 
-In my research I've looked into different approaches to detect duplicates and remove them from the dataset. The first approach was to just remove all duplicates that are in the data, this wasn't successful because most of the duplicates have different writings or completely different values in some of the fields. So I started to analyze the data and look for potential duplicates and how to prepare them so that the program can match them. The first step was to remove all special characters and some other unnecessary contents in the different columns. After that I investigated which columns are the most useful when it comes to duplicate detection. 
+In my research I've looked into different approaches to detect duplicates and remove them from the dataset. The first approach was to just remove all duplicates that are in the data, this wasn't successful because most of the duplicated entries had different writing or completely different values in some of the fields. So I started to analyze the data and look for potential duplicates and how to prepare them so that the program can match them. The first step was to remove all special characters and some other unnecessary contents in the different columns. After that I investigated which columns are the most useful when it comes to duplicate detection and researched them more accurate to prepare them correctly. 
 
-After researching and removing potential duplicates, I calculated the count for true positives, false positives, true negatives and false negatives of my prediction with the help of the gold standard duplicate dataset which was evaluated by hand. With the help of these metrics I calculated the recall and precision for my result to get a better understanding, how good my evaluations were. As a conclusion the values I got were: 
+After each step of my preprocessing pipeline, I calculated different values and metrics for my potential duplicates. These were: the count for true positives, false positives, true negatives and false negatives as well as the metrics accuracy, recall and precssion. To calculate these, I used the gold standard duplicate dataset which was evaluated by hand. With the help of these metrics I was able to decide how good or bad my results were. As a conclusion the best values I archived were: 
 \begin{itemize}
 	\item All entries in original dataset: 864
-	\item Detected duplicates (all): 111
+	\item Detected duplicates (all): 100
 	\item Real duplicates (from gold standard): 112
-	\item True positives: 103
-	\item True negatives: 744
-	\item False positives: 8
-	\item False negatives: 9
-	\item Precision: 0.93
-	\item Recall: 0.92
+	\item True positives: 100
+	\item True negatives: 752
+	\item False positives: 0
+	\item False negatives: 12
+	\item Accuracy 0.97
+	\item Precision: 1.0
+	\item Recall: 0.89
 \end{itemize}
 
-After the methods are applied and the duplicates are removed it is necessary to store the new dataset somewhere. For this I have choosen mongodb because of it's great compatibility with many programming languages and the low expenses when you want to store data in it. Mongodb could also be used for many preprocessing tasks because of the great aggregation framework that it offers. 
+After the methods were applied and duplicates were removed it was necessary to store the new dataset somewhere. For this I have chosen mongodb because of it's great compatibility with many programming languages and the low expenses when you want to store data in it. Mongodb could also be used for many preprocessing tasks because of the great aggregation framework that it offers. In this research I rather focused on the preprocessing with pandas, a python data science library.
 \section{Why duplicate detection is important}
-Duplicate detection is an important task in data science for several reasons. Often when a data scientist gets data to research it's a problem that it isn't preprocessed and contains wrong or duplicate entries. Detecting and removing these is a hard but important task. When working with unclean data mistakes can happen. For example let's look at the restaurant dataset which is described in \fullref{sec_dataset}. This dataset could be used to recommend restaurants to an user from an application. When the recommendation contains duplicates with even different writing for the same restaurants the user could be confused and stop using our application. Duplicate detection is also important when solving machine learning tasks because most machine learning algorithms can't handle duplicates and give higher priority to dupliacted records which would result in a less accurate machine learning model.
+Duplicate detection is an important task in data science for several reasons. Often when a data scientist gets data to research, it's a problem that it isn't preprocessed and contains wrong or duplicate entries. Detecting and removing these is a hard but important task. When working with unclean data, mistakes can happen. For example let's look at the restaurant dataset which is described in \fullref{sec_dataset}. This data could be used to recommend restaurants to an user of an application. When the recommendation contains duplicates with even different writing for the same restaurant, the user could be confused and stop using our application. Duplicate detection is also important when solving machine learning tasks because most machine learning algorithms can't handle duplicates and because of this give higher priority to duplicated records which would result in a less accurate machine learning model.
 
 Because of these problems, duplicate detection is such a big topic in the computer science space.
 \section{The restaurants dataset} \label{sec_dataset}
-The restaurants dataset which is researhed in this paper is a .tsv dataset which contains 864 rows of data with six columns. The columns of the dataset are: 
+The restaurants dataset which was researched in this paper is a .tsv dataset that describe the location and type of different restaurants. It contains 864 rows of data with six columns. The columns of the dataset are: 
 \begin{itemize}
 	\item id: The unique id of each row
 	\item name: The name of the restaurant
@@ -71,13 +70,13 @@ The restaurants dataset which is researhed in this paper is a .tsv dataset which
 	\item phone: The phone number of the restaurant
 	\item type: The kind of the restaurant (i.e. french or american)
 \end{itemize}
-In the data there are 122 duplicated restaurants. These duplicates were picked by hand from some researchers to define a gold standard which would be the best possible result after removing all duplicates. The duplicates that occur in the dataset have different deviations from each other. For example some duplicates have a different order of the words in their name field like "the palm" and "palm the". Others have different separators for the phone number like "310/659-9639" and "310-659-9639". Sometimes the city field of the duplicates is a district from a bigger city and sometimes it's the city name itself like "los angeles" and "hollywood". There are even more  different deviations in the dataset as well whose solution to detect them will be discussed later in \fullref{sec_methods} section.
+In the data there are 122 duplicated restaurants. These duplicates were picked by hand from some researchers to define a gold standard which would be the best possible result after removing all duplicates. These duplicates have different deviations from each other. For example some have a different order of the words in their name field like "the palm" and "palm the". Others have different separators for the phone number like "310/659-9639" and "310-659-9639". Sometimes the city field of the duplicates is a district from a bigger city and sometimes it's the city name itself like "los angeles" and "hollywood". There are even more  different deviations in the dataset whose solution to detect them will be discussed later in \fullref{sec_methods} section.
 
-In my research I focused mostly on the columns name, city, address and phone because they have the most useful information when it comes to duplicate detection.The id column was left out because it's only a unique identifier which wouldn't bring a benefit for duplicate recognition. The type column was left out because there are to much restaurants with the same type which would result in an unclean target data record.
+In my research I focused mostly on the columns name, city, address and phone because they have the most useful information when it comes to duplicate detection.The id column was left out because it's only a unique identifier which wouldn't bring a benefit for duplicate recognition. The type column was left out because there were to much restaurants with the same type which would result in an unclean target data record.
 
-Besides of the plain restaurants dataset there is also a dataset given which contains all the duplicates in the data by id. In this duplicate set, there are only two columns, "id1" and "id2" which define the original id and the duplicate id. A dataset without all these duplicates is considered as gold standard. The reached results will be measured to this gold standard.
-\section{Metrics used to measure th results}
-To measure the accuracy of results when it comes to duplicate detection there are different metrics that are commonly used. For all these metrics it's important to pre calculate four values with the help of the gold standard data and the archived results: 
+Besides of the plain restaurants dataset there is also a dataset given which contains all the duplicates of the data by id. In this duplicate set, there are only two columns, "id1" and "id2" which define the original id and the duplicate id. A dataset without all these duplicates is considered as gold standard. The reached results will be measured to this gold standard.
+\section{Metrics used to measure results}
+To measure the accuracy of results when it comes to duplicate detection there are different metrics that are commonly used. For all these it's important to pre calculate four values with the help of the gold standard data and the archived results: 
 \begin{itemize}
 	\item True positives (TP): The correct classified true entries
 	\item True negatives (TN): The correct classified false entries
@@ -94,79 +93,136 @@ Only calculating the accuracy isn't enough in this task because the it only give
 
 Precision measures the exactness for the minority class by only considering the positive classified entries of the result set. Because of this it is a good measurement for unbalanced data.
 \begin{align}
-	Precision = \frac{TruePositives}{TruePositives + FalsePositives}
+	Precision = \frac{TP}{TP + FP}
 \end{align}
+ 
 Recal instead gives the accuracy for the fraction of relevant data.
 \begin{align}
-	Recall = \frac{TruePositives}{TruePositives + FalseNegatives}
+	Recall = \frac{TP}{TP + FN}
 \end{align}
-\section{Methods used to detect duplicates} \label{sec_methods}
-The research was written in python, a programming language, which is widely used in data science tasks. For my research I mostly used the Python pandas library, which has good data analysis features. 
+\section{Methods used in the preprocessing task} \label{sec_methods}
+The research was written in python, a programming language, which is widely used for data science tasks. For my research I mostly used the Python pandas library \cite{bib:pandas_doc}, which has good data analysis features. 
 
-As a whole there are 112 duplicates in the dataset which were selected by hand.
+The goal of the methods used was to minimize the number of unique values in each column that represent the same "real" value so that an equality match for different column combinations(see \fullref{sec_not defined yet}) can match them as duplicates.
+\subsection{Studying the dataset}
+The first step when it comes to data science tasks is to explore the structure and the different columns of a dataset. 
 
-At first I only looked into the first 100 entries and tried to understand the difference and connections between the different rows and columns. I found out that many noise in the data came from special characters. So I removed every special character except spaces from the four columns that I looked into. Large and lower case letters didn't have to be considered because the whole data was in lower case letters. The received metrics after the first step of the data cleaning pipeline were: 
-\begin{itemize}
-	\item Detected duplicates (all): 86
-	\item True positives: 80
-	\item True negatives: 746
-    \item False positives: 6
-	\item False negatives: 32
-	\item Accuracy 0.96
-    \item Precision: 0.9302325581395349
-	\item Recall: 0.7142857142857143
-\end{itemize}
-This is quite good for simply removing special characters, but the results can be optimized more. 
+This was done by viewing at the first lines of the dataset itself and looking at the values of the different entries to understand their meaning. After doing this, it's necessary to look into each column by itself. For this there was especially looked at the unique values of each column. Here it was found that for example the "type" column is very inconsistent with its values(i.e. sometimes the value is "pizza" and sometimes it's "italian" for the same kind of restaurant) and wouldn't fit as a column to find duplicates because there are too many restaurants with the same type after normalizing them. So the "type" column was dropped for this research.
 
-The next step of my data cleaning pipeline was to map multiple occurrences of the same city with different writing to as single key. For example there were entries which had "la" as a value and others had "los angeles". After applying this, the metrics were: 
-\begin{itemize}
-	\item Detected duplicates (all): 104
-	\item True positives: 98
-	\item True negatives: 746
-	\item False positives: 6
-	\item False negatives: 14
-	\item Accuracy: 0.98
-	\item Precision: 0.94
-	\item Recall: 0.88
-\end{itemize}
-It's noticeable that the results have improved slightly after mapping the citynames. As a next step I removed appendixes from the address column. For this I have chosen to remove everything which occurs after "between", "off", "near", "at" or "in" from thee address string because many addresses had more precise descriptions for the address after the real address. Following up, I decided to remove appendixes of the street number like "1st" to "1" or "2nd" to 2. Then I looked again on the dataset and found out that the columns "address", as well as "name" both sometimes have a direction (like "north" or in short "n") added and sometimes don't, which is very inconsistent. So I removed every occurrence of a direction from this two columns. Neither of these three actions affected the metrics. 
+The columns left ("name", "address", "city" and "phone")
 
-So I researched the dataset again and found out that there are more inconsistencies in the address field. At first I discovered that some numbers in the address were written ass tring and others as numbers. So I mapped these to only represent numbers (i.e. "first" to 1). I also noticed that some words sometimes were written in short in the address column. These were: 
-\begin{itemize}
-	\item los angeles: la
-	\item avenue: ave
-	\item road: rd
-	\item boulevard: blv, blvd
-	\item street: st
-\end{itemize}
-After remapping these, the metrics had a big improvement to: 
-\begin{itemize}
-	\item Detected duplicates (all): 111
-	\item True positives: 103
-	\item True negatives: 744
-	\item False positives: 8
-	\item False negatives: 9
-	\item Accuracy: 0.98
-	\item Precision: 0.93
-	\item Recall: 0.92
-\end{itemize}
-These were the final metrics for my research which I could archive with a three out of four combination from the columns "name", "address", "city" and "phone". This isn't that bad because they are near the gold standard. But there are also some drawbacks when viewing at these results. The eight false positives that were found are responsible that eight restaurants which aren't duplicates would be considered as such and removed from the data, which isn't good. This issue can be resolved by viewing on the false positives values and change the duplicate selection task so that no false positives emerge. The corresponding values that were matched as false positives have the common ground that the duplicate groups all have the same values for city, name and phone. This issue can be resolved by choosing other combinations of columns which are considered.
+The outcomes of researching the other columns name, phone and address are described in the subsections below
 
-When removing the combination of "address", "city" and "phone" for the dupliacte detection, the outcoming metrics are: 
-\begin{itemize}
-	\item Detected duplicates (all): 82
-	\item True positives: 82
-	\item True negatives: 752
-	\item False positives: 0
-	\item False negatives: 30
-	\item Accuracy 0.97
-	\item Precision: 1.0
-	\item Recall: 0.73
-\end{itemize}
-After applying the new column combination the recall got much more bad but there are no more false positives which could break the whole sense of duplicate detection. 
-\section{Potential improvements and other researches} \label{sec_imporvements}
+
+PLACEHOLDER!!!!
+
+
+
+
+
+
+
+
+
+\subsection{Step 1: Generic clearing of the columns}
+As a first approach it was necessary to do as many generic operations for all columns as possible. 
+
+Many noise in the data came from special characters. So I removed every special character except spaces from the four columns("name", "address", "city", "phone") that I looked into. Large and lower case letters didn't have to be considered because the whole data was in lower case letters. Otherwise it would have been necessary to convert all strings to lowercase.
+
+Further examination of the columns has shown that some values contain cardinal directions where others don't. Sometimes the cardinal directions were even written differently (i.e. "n" and "north"). So the next step was to write a regex that detects every occurrence of a cardinal directions. The regex to detect these is: 
+\begin{lstlisting}
+	'(( |^)((south)|(east)|(west)|(north)|(ne)|(se)|(nw)|(sw)|s|w|e|n)( |$))'
+\end{lstlisting}
+This was then used to replace everything that matches with an empty string.
+\subsection{Clearing the city column}
+After the generic clearing, it was necessary to clear the specifics of each column by itself. It was discovered that some city names were written inconsistent. For example, sometimes "la" was written instead of "los angeles". So I mapped every double occurrence of a city name to a standard value. This map looked like: 
+\begin{lstlisting}
+	"la", "west la" -> "los angeles"
+	"new york city" -> "new york"
+\end{lstlisting}
+After applying this mapping, the "city" column can be considered as cleared.  
+\section{Clearing the address column}
+As a next step the address column needed to be cleared. While viewing the entries, it was found out that many addresses had unnecessary appendixes to more accurate describe the location of a restaurant (i.e. "3125 piedmont rd. near peachtree rd."). These needed to be removed from the entries. For this I decided to accumulate the words that split the real address from its description and remove everything that appears behind them. The words detected were: 
+\begin{lstlisting}
+"between", "off", "near", "at" and "in"
+\end{lstlisting}
+Another inconsistency to solve was the different writing of number (i.e. "1", "1st" or "first"). To solve this, at first a regex was used to detect appendixes of numbers and thereafter remove them. The regex to detect number appendixes is: 
+\begin{lstlisting}
+	'(?<=\d)(st|nd|rd|th)\b'
+\end{lstlisting}
+After applying this, it was necessary to map occurrences of string numbers to their numeric representation to normalize all numbers in the address column. This map looked like: 
+\begin{lstlisting}
+	first -> 1
+	second -> 2
+	...
+	twelfth -> 12
+\end{lstlisting} 
+
+
+Another inconsistency in the address column was the different wrioting of some words. So I mapped these different representations of the same words like: 
+\begin{lstlisting}
+	"la" -> "los angeles" 
+	"ave" -> "avenue"
+	"rd" -> "road"
+	"blv", "blvs" -> "boulevard" 
+	"st" -> "street"
+\end{lstlisting} 
+This resulted in the new metrics: 
+
+So, one more duplicate was found by clearing the "address" column.
+
+The next column to clear was the "name" column. at first I did a similar approach like I have done with the addresses, to remove every appendix after the words: "between", "off", "near", "at", "in" and "of".  Then I discovered that sometimes the name of a restaurant also contains the city where it's located. This information is already present in the city column, so I decided to also remove these city names. I removed the occurred cities "los angeles", "las vegas", "new york city" and "new york". I also decided to remove some unnecessary words in the name field because they only brought noise in the data. These words were "the", "restaurant" and "and". This resulted in the new metrics: 
+
+After clearing the name, three more duplicates were found. 
+
+As a last step of my duplicate detection research I decided to sort the single words of the name column because often the restaurant names were written in a different word order. The sorting was a simple descending sort of all words in each row. This resulted in the final metrics: 
+
+In the final results there were 12 False Negatives left, which is pretty good. The most important is, that there were no False Positives, which would result in a bad precision and so would break the sense of duplicate detection. There are other algorithms to improve the archived results which will be sicussed in \fullref{sec_improvements}.
+\section{Results}
+\section{Storing data into mongodb}
+After doing my research and reaching a reliable result, it's important to store the resulted data somewhere. For this I have chosen to use a cloud hosted mongodb database because it's easy to use and fill databases from python. Whith mongodb it's possible to simply push python dictionaries to the database and it stores the dta in a correct way.The cloud hosted approach was chosen to make it easy to access the data anytime. 
+
+Before storing the non duplicate dataset in mongodb, I had to change my resulted entries back to the original values because in the preprocessing task there were many changes to the data, which nearly made it unreadable for humans. For this I have chosen to select the first occurring entry for a duplicate from the original dataset.
+\begin{table}[t]
+\begin{center}
+		\caption{Metrics for the reached results}
+	\label{tab:results} 
+	\begin{tabular}{|c||c|c|c|c|c|}
+		\hline
+		Metric & step 1 & step 2 & step 3 & step 4 & step 5 \\ 
+		\hline\hline
+		Detected duplicates &1 & 1&1& 1&5\\
+		\hline
+		True Positives &1 & 1&1& 1&5  \\ 
+		\hline
+		True Negatives &1 & 1&1& 1&5  \\  
+		\hline
+		False Positives &1 & 1&1& 1&5     \\  
+		\hline
+		False Negatives &1 & 1&1& 1&5    \\  
+		\hline
+		Accuracy &1 & 1&1& 1&5    \\  
+		\hline
+		Precision &1 & 1&1& 1&5    \\  
+		\hline
+		Recall &1 & 1&1& 1&5 \\
+		\hline
+	\end{tabular}
+\end{center}
+\end{table}
+\section{Potential improvements and other researches} \label{sec_improvements}
+Another improvement to this map would have been a mapping from districts to city names like "hollywood" -> "los angeles", because the entries sometimes had the district and sometimes had the city name in its column.
 \section{Conclusion}
-
+\begin{thebibliography}{00}
+	\bibitem{bib:pandas_doc} Python pandas library documentation, Accessed on: January 3, 2020 [online].
+	Available: https://pandas.pydata.org/pandas-docs/stable/
+	\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
+	\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
+	\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
+	\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
+	\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
+	\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\end{thebibliography}
 
 \newpage 
 1
@@ -368,7 +424,11 @@ acknowledgments in the unnumbered footnote on the first page.
 
 \section*{References}
 
-Please number citations consecutively within brackets \cite{b1}. The 
+Please number citations consecutively within brackets \
+
+
+
+{b1}. The 
 sentence punctuation follows the bracket \cite{b2}. Refer simply to the reference 
 number, as in \cite{b3}---do not use ``Ref. \cite{b3}'' or ``reference \cite{b3}'' except at 
 the beginning of a sentence: ``Reference \cite{b3} was the first $\ldots$''
@@ -387,15 +447,7 @@ element symbols.
 For papers published in translation journals, please give the English 
 citation first, followed by the original foreign-language citation \cite{b6}.
 
-\begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
-\end{thebibliography}
+
 \vspace{12pt}
 \color{red}
 IEEE conference templates contain guidance text for composing and formatting conference papers. Please ensure that all template text is removed from your conference paper prior to submission to the conference. Failure to remove the template text from your paper may result in your paper not being published.

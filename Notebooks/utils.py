@@ -31,8 +31,8 @@ def print_metrics(restaurant_data, detected_duplicates, true_duplicates):
 
 def remove_special_characters(restaurant_data):
     restaurant_data.phone = restaurant_data.phone.map(lambda x: re.sub(r'\W+', '', x))
-    restaurant_data.address = restaurant_data.address.map(lambda x: re.sub(r'[^a-zA-Z0-9 ]+', '', x))
-    restaurant_data.name = restaurant_data.name.map(lambda x: re.sub(r'[^a-zA-Z0-9 ]+', '', x))
+    restaurant_data.address = restaurant_data.address.map(lambda x: re.sub(r"[^a-zA-Z0-9 ]+", '', x))
+    restaurant_data.name = restaurant_data.name.map(lambda x: re.sub(r"('s)|[^a-zA-Z0-9 ]+", '', x))
     restaurant_data.city = restaurant_data.city.map(lambda x: re.sub(r'[^a-zA-Z0-9 ]+', '', x))
     return restaurant_data
 
@@ -61,3 +61,11 @@ def get_duplicates_bool(restaurant_data):
         restaurant_data.duplicated(subset=address_city_name_phone).sum()))
     print('duplicates in 3 columns of address, city, name and phone' + str(duplicates_bool.sum()))
     return duplicates_bool
+
+
+def trim_multiple_blanks(restaurant_data):
+    restaurant_data.name = restaurant_data.name.replace('\s+', ' ', regex=True)
+    restaurant_data.address = restaurant_data.address.replace('\s+', ' ', regex=True)
+    restaurant_data.city = restaurant_data.city.replace('\s+', ' ', regex=True)
+    restaurant_data.phone = restaurant_data.phone.replace('\s+', ' ', regex=True)
+    return restaurant_data

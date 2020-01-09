@@ -1,20 +1,26 @@
 \BOOKMARK [1][-]{section.1}{Introduction}{}% 1
 \BOOKMARK [1][-]{section.2}{Why duplicate detection is important}{}% 2
 \BOOKMARK [1][-]{section.3}{The restaurants dataset}{}% 3
-\BOOKMARK [1][-]{section.4}{Metrics used to measure th results}{}% 4
-\BOOKMARK [1][-]{section.5}{Methods used to detect duplicates}{}% 5
-\BOOKMARK [1][-]{section.6}{Potential improvements and other researches}{}% 6
-\BOOKMARK [1][-]{section.7}{Conclusion}{}% 7
-\BOOKMARK [1][-]{section.8}{Introduction}{}% 8
-\BOOKMARK [1][-]{section.9}{Ease of Use}{}% 9
-\BOOKMARK [2][-]{subsection.9.1}{Maintaining the Integrity of the Specifications}{section.9}% 10
-\BOOKMARK [1][-]{section.10}{Prepare Your Paper Before Styling}{}% 11
-\BOOKMARK [2][-]{subsection.10.1}{Abbreviations and Acronyms}{section.10}% 12
-\BOOKMARK [2][-]{subsection.10.2}{Units}{section.10}% 13
-\BOOKMARK [2][-]{subsection.10.3}{Equations}{section.10}% 14
-\BOOKMARK [2][-]{subsection.10.4}{LaTeX-Specific Advice}{section.10}% 15
-\BOOKMARK [2][-]{subsection.10.5}{Some Common Mistakes}{section.10}% 16
-\BOOKMARK [2][-]{subsection.10.6}{Authors and Affiliations}{section.10}% 17
-\BOOKMARK [2][-]{subsection.10.7}{Identify the Headings}{section.10}% 18
-\BOOKMARK [2][-]{subsection.10.8}{Figures and Tables}{section.10}% 19
-\BOOKMARK [1][-]{section*.3}{References}{}% 20
+\BOOKMARK [1][-]{section.4}{Metrics used to measure results}{}% 4
+\BOOKMARK [1][-]{section.5}{Methods used in the preprocessing task}{}% 5
+\BOOKMARK [2][-]{subsection.5.1}{Studying the dataset}{section.5}% 6
+\BOOKMARK [2][-]{subsection.5.2}{Step 1: Generic clearing of the columns}{section.5}% 7
+\BOOKMARK [2][-]{subsection.5.3}{Clearing the city column}{section.5}% 8
+\BOOKMARK [1][-]{section.6}{Clearing the address column}{}% 9
+\BOOKMARK [1][-]{section.7}{Results}{}% 10
+\BOOKMARK [1][-]{section.8}{Storing data into mongodb}{}% 11
+\BOOKMARK [1][-]{section.9}{Potential improvements and other researches}{}% 12
+\BOOKMARK [1][-]{section.10}{Conclusion}{}% 13
+\BOOKMARK [1][-]{section*.1}{References}{}% 14
+\BOOKMARK [1][-]{section.11}{Introduction}{}% 15
+\BOOKMARK [1][-]{section.12}{Ease of Use}{}% 16
+\BOOKMARK [2][-]{subsection.12.1}{Maintaining the Integrity of the Specifications}{section.12}% 17
+\BOOKMARK [1][-]{section.13}{Prepare Your Paper Before Styling}{}% 18
+\BOOKMARK [2][-]{subsection.13.1}{Abbreviations and Acronyms}{section.13}% 19
+\BOOKMARK [2][-]{subsection.13.2}{Units}{section.13}% 20
+\BOOKMARK [2][-]{subsection.13.3}{Equations}{section.13}% 21
+\BOOKMARK [2][-]{subsection.13.4}{LaTeX-Specific Advice}{section.13}% 22
+\BOOKMARK [2][-]{subsection.13.5}{Some Common Mistakes}{section.13}% 23
+\BOOKMARK [2][-]{subsection.13.6}{Authors and Affiliations}{section.13}% 24
+\BOOKMARK [2][-]{subsection.13.7}{Identify the Headings}{section.13}% 25
+\BOOKMARK [2][-]{subsection.13.8}{Figures and Tables}{section.13}% 26
