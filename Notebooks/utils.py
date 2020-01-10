@@ -39,19 +39,27 @@ def remove_special_characters(restaurant_data):
 
 def get_duplicates_bool(restaurant_data):
     # Get a Series of all duplicate entries
-    address_city_phone =['id']# ['address', 'city', 'phone']
     address_name_phone = ['address', 'name', 'phone']
     address_city_name = ['address', 'city', 'name']
     name_city_phone = ['name', 'city', 'phone']
     address_city_name_phone = ['address', 'city', 'name', 'phone']
-    duplicates_address_city_phone = restaurant_data.duplicated(subset=address_city_phone)
+    duplicates_city = restaurant_data.duplicated(subset=['city'])
+    duplicates_name = restaurant_data.duplicated(subset=['name'])
+    duplicates_address = restaurant_data.duplicated(subset=['address'])
+    duplicates_phone = restaurant_data.duplicated(subset=['phone'])
     duplicates_address_name_phone = restaurant_data.duplicated(subset=address_name_phone)
     duplicates_address_city_name = restaurant_data.duplicated(subset=address_city_name)
     duplicates_name_city_phone = restaurant_data.duplicated(subset=name_city_phone)
-    duplicates_bool = duplicates_address_city_phone | duplicates_address_name_phone | duplicates_address_city_name | duplicates_name_city_phone
+    duplicates_bool = duplicates_address_name_phone | duplicates_address_city_name | duplicates_name_city_phone
     # Check for the duplicates in the four important columns in our dataset
-    print('Duplicates in address, city and phone' + str(
-        duplicates_address_city_phone.sum()))
+    print('Duplicates in address: ' + str(
+        duplicates_address.sum()))
+    print('Duplicates in name: ' + str(
+        duplicates_name.sum()))
+    print('Duplicates in phone: ' + str(
+        duplicates_phone.sum()))
+    print('Duplicates in city: ' + str(
+        duplicates_city.sum()))
     print('Duplicates in address name and phone: ' + str(
         duplicates_address_name_phone.sum()))
     print('Duplicates in address city and name: ' + str(
