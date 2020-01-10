@@ -1,8 +1,9 @@
 import re
 
+from more_itertools.more import only
+
 
 def print_metrics(restaurant_data, detected_duplicates, true_duplicates):
-
     # Check the quality of the duplicate detection
     restaurant_data_count = len(restaurant_data)
     my_duplicate_ids = detected_duplicates['id']
@@ -12,10 +13,10 @@ def print_metrics(restaurant_data, detected_duplicates, true_duplicates):
     false_positives_count = len(my_duplicate_ids[my_duplicate_ids.isin(true_duplicates.id2) == False])
     false_negatives = real_duplicates_count - true_positives_count
     true_negatives = restaurant_data_count - real_duplicates_count - false_positives_count
-    accuracy = (true_positives_count + true_negatives) / (true_positives_count + true_negatives + false_positives_count + false_negatives)
+    accuracy = (true_positives_count + true_negatives) / (
+                true_positives_count + true_negatives + false_positives_count + false_negatives)
     precision = true_positives_count / my_duplicate_count
     recall = true_positives_count / (true_positives_count + false_negatives)
-
 
     print('All entries in original dataset: ' + str(restaurant_data_count))
     print('Detected duplicates (all): ' + str(my_duplicate_count))
@@ -77,3 +78,31 @@ def trim_multiple_blanks(restaurant_data):
     restaurant_data.city = restaurant_data.city.replace('\s+', ' ', regex=True)
     restaurant_data.phone = restaurant_data.phone.replace('\s+', ' ', regex=True)
     return restaurant_data
+
+
+def get_final_dataset(restaurant_data_original, cleared_restaurant_data):
+    address_name_phone = ['address', 'name', 'phone']
+    address_city_name = ['address', 'city', 'name']
+    name_city_phone = ['name', 'city', 'phone']
+    duplicates_address_name_phone = cleared_restaurant_data.duplicated(subset=address_name_phone, keep=False)
+    duplicates_address_city_name = cleared_restaurant_data.duplicated(subset=address_city_name, keep=False)
+    duplicates_name_city_phone = cleared_restaurant_data.duplicated(subset=name_city_phone, keep=False)
+    all_duplicates_bool = duplicates_address_name_phone | duplicates_address_city_name | duplicates_name_city_phone
+    only_duplicates = cleared_restaurant_data[all_duplicates_bool]
+    duplicate_indices = {}
+    for row1_idx, row1 in only_duplicates.iterrows():
+        cur_index = str(row1_idx)
+        row_1_imp_cols_1 = row1[address_name_phone]
+        row_1_imp_cols_2 = row1[address_city_name]
+        row_1_imp_cols_3 = row1[name_city_phone]
+        duplicate_indices[cur_index] = []
+        for row2_idx, row2 in only_duplicates[only_duplicates.id > row1_idx].iterrows():
+            row_2_imp_cols_1 = row2[address_name_phone]
+            row_2_imp_cols_2 = row2[address_city_name]
+            row_2_imp_cols_3 = row2[name_city_phone]
+            if (row_1_imp_cols_1.equals(row_2_imp_cols_1) or
+                    row_1_imp_cols_2.equals(row_2_imp_cols_2) or
+                    row_1_imp_cols_3.equals(row_2_imp_cols_3)):
+                duplicate_indices[cur_index].append(row2_idx)
+                print('dup found')
+    return duplicate_indices

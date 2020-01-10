@@ -94,13 +94,20 @@ The results obtained are measured after each important step of the pre-processin
 The research was written in Python, a programming language widely used for data science tasks. The Python-Pandas framework, which provides good data analysis capabilities was used for this research\cite{bib:pandas_doc}.
 
 The goal of the methods used was to minimize the number of unique values in each column representing the same "real" value so that an equality match for different column combinations (see \fullref{sec:dup_detection_method}) could match them as duplicates.
+
+A complete conclusion of the pre-processing flow can be found in Fig.~\ref{fig:program_flow}
+\begin{figure}[htbp]
+	\centerline{\includegraphics[width=9cm]{figures/program_flow.png}}
+	\caption{Program flow}
+	\label{fig:program_flow}
+\end{figure}
 \subsection{Studying the dataset}
 The first step in data science tasks is to examine the structure and the different columns of a data set. 
 
 This was done by looking at the first lines of the record itself and looking at the values of the different entries to understand their meaning. Afterwards it was necessary to look at each column on its own. This was done by looking at the unique values of each column in particular. Here it was found that e.g. the column "Type" is very inconsistent with its values (i.e. sometimes the value is "Pizza" and sometimes "Italian" for the same type of restaurant) and would not fit as a column to find duplicates, because after normalization there would be too many restaurants of the same type. Therefore the column "Type" was dropped for this investigation.
 
 The results of researching the other columns name, phone and address are described in the subsections below.
-\subsection{Generic clearing of the columns}
+\subsection{Step 1: Generic clearing of the columns}
 As a first approach it was necessary to perform as many generic operations for all columns as possible. 
 
 Many errors in the data came from special characters. So all special characters except spaces were removed from the four columns considered ("Name", "Address", "City", "Phone"). Upper and lower case letters did not have to be considered, since all the data was in lower case. Otherwise it would have been necessary to convert all strings to lower case.
@@ -113,7 +120,7 @@ Further investigation of the alphabetic columns has shown that some values conta
 This was then used to replace everything that matches with an empty string.
 
 After applying generic data clearing, the duplicates for each column(except "city") have grown. Especially for the "phone" column, it was noticeable that the detected duplicates have grown from seven to 116, which is quite good.
-\subsection{Clearing the city column}
+\subsection{Step 2: Clearing the city column}
 After the generic clearing, it was necessary to clean up the specifics of each column on its own. It was found that some city names were written inconsistently. For example, sometimes "la" was written instead of "los angeles". So every duplicate occurrence of a city name was mapped to a default value. This map looked like: 
 \begin{lstlisting}
 	"la", "west la" -> "los angeles"
@@ -122,7 +129,7 @@ After the generic clearing, it was necessary to clean up the specifics of each c
 After applying this mapping, the "city" column was considered as cleared.
 
 When looking at the resulting metrics, it is noticeable that due to this allocation only two more duplicates were found in this column compared to the previous step. But this is okay, because the city column already contained 815 duplicates before and it is common that there aren't that many different values when viewing at restaurants that are only located at several citys.
-\subsection{Clearing the address column}
+\subsection{Step 3: Clearing the address column}
 The next step was to clean up the address column. When looking at the entries, it was found that many addresses have unnecessary attachments to describe the location of a restaurant more precisely (e.g. "3125 piedmont rd. near peachtree rd."). These had to be removed from the entries. To do this, it was decided to collect the words that separate the actual address from its description and remove everything behind it. The words found were: 
 \begin{lstlisting}
 "between", "off", "near", "at" and "in"
@@ -147,7 +154,7 @@ For the further cleaning of the "address" column it was necessary to map differe
 	"st" -> "street"
 \end{lstlisting} 
 After applying these clearing steps to the "address" column, the unique values have decreased from 761 to 739, and the duplicates in this particular column have increased from 103 to 127 compared to the previous step, meaning that 24 more duplicate entries have been found in this column compared to the state before applying these clearing steps.
-\subsection{Clearing the name column}
+\subsection{Step 4: Clearing the name column}
 The last column to be cleaned up was "name". Initially, a similar procedure as for the "address" column was used to remove more precise descriptions for the location. So everything after the words "between", "off", "near", "at", "in" and "of" was removed.
 
 
