@@ -77,25 +77,28 @@ def trim_multiple_blanks(restaurant_data):
     restaurant_data.address = restaurant_data.address.replace('\s+', ' ', regex=True)
     restaurant_data.city = restaurant_data.city.replace('\s+', ' ', regex=True)
     restaurant_data.phone = restaurant_data.phone.replace('\s+', ' ', regex=True)
+    restaurant_data.name = restaurant_data.name.str.strip()
+    restaurant_data.address = restaurant_data.address.str.strip()
+    restaurant_data.phone = restaurant_data.phone.str.strip()
+    restaurant_data.city = restaurant_data.city.str.strip()
     return restaurant_data
 
 
-def get_final_dataset(restaurant_data_original, cleared_restaurant_data):
+def get_final_dataset(restaurant_data_original, restaurant_data_cleared):
     address_name_phone = ['address', 'name', 'phone']
     address_city_name = ['address', 'city', 'name']
     name_city_phone = ['name', 'city', 'phone']
-    duplicates_address_name_phone = cleared_restaurant_data.duplicated(subset=address_name_phone, keep=False)
-    duplicates_address_city_name = cleared_restaurant_data.duplicated(subset=address_city_name, keep=False)
-    duplicates_name_city_phone = cleared_restaurant_data.duplicated(subset=name_city_phone, keep=False)
+    duplicates_address_name_phone = restaurant_data_cleared.duplicated(subset=address_name_phone, keep=False)
+    duplicates_address_city_name = restaurant_data_cleared.duplicated(subset=address_city_name, keep=False)
+    duplicates_name_city_phone = restaurant_data_cleared.duplicated(subset=name_city_phone, keep=False)
     all_duplicates_bool = duplicates_address_name_phone | duplicates_address_city_name | duplicates_name_city_phone
-    only_duplicates = cleared_restaurant_data[all_duplicates_bool]
+    only_duplicates = restaurant_data_cleared[all_duplicates_bool]
     duplicate_indices = {}
     for row1_idx, row1 in only_duplicates.iterrows():
-        cur_index = str(row1_idx)
+        cur_index = row1_idx
         row_1_imp_cols_1 = row1[address_name_phone]
         row_1_imp_cols_2 = row1[address_city_name]
         row_1_imp_cols_3 = row1[name_city_phone]
-        duplicate_indices[cur_index] = []
         for row2_idx, row2 in only_duplicates[only_duplicates.id > row1_idx].iterrows():
             row_2_imp_cols_1 = row2[address_name_phone]
             row_2_imp_cols_2 = row2[address_city_name]
@@ -103,6 +106,23 @@ def get_final_dataset(restaurant_data_original, cleared_restaurant_data):
             if (row_1_imp_cols_1.equals(row_2_imp_cols_1) or
                     row_1_imp_cols_2.equals(row_2_imp_cols_2) or
                     row_1_imp_cols_3.equals(row_2_imp_cols_3)):
+                if duplicate_indices.get(cur_index) is None:
+                    duplicate_indices[cur_index] = []
                 duplicate_indices[cur_index].append(row2_idx)
-                print('dup found')
-    return duplicate_indices
+
+    for original_index in duplicate_indices:
+        original_cleared_entry = restaurant_data_cleared.loc[original_index]
+        original_entry = restaurant_data_original.loc[original_index]
+        for duplicate_index in duplicate_indices.get(original_index):
+            duplicate_cleared_entry = restaurant_data_cleared.loc[duplicate_index]
+            duplicate_entry = restaurant_data_original.loc[duplicate_index]
+            if original_cleared_entry.phone != duplicate_cleared_entry.phone:
+                restaurant_data_original.loc[original_index, 'phone'] = original_entry.phone + ', \n ' + duplicate_entry.phone
+                print(restaurant_data_original.loc[original_index].phone)
+            if original_cleared_entry.city != duplicate_cleared_entry.city:
+                restaurant_data_original.loc[original_index, 'city'] = [original_entry.city + ', \n ' + duplicate_entry.city]
+                if original_cleared_entry.address != duplicate_cleared_entry.address:
+                    restaurant_data_original.loc[original_index, 'address'] = [
+                        original_entry.address + ', \n ' + duplicate_entry.address]
+            restaurant_data_original = restaurant_data_original.drop([duplicate_index])
+    return restaurant_data_original

@@ -91,9 +91,11 @@ Recal instead gives the accuracy for the fraction of relevant data.
 \end{align}
 The results obtained are measured after each important step of the pre-processing task and are presented in the \fullref{sec:results}.
 \section{Preprocessing the data set} \label{sec_methods}
-The research was written in Python, a programming language widely used for data science tasks. The Python-Pandas framework, which provides good data analysis capabilities was used for this research\cite{bib:pandas_doc}.
+The research was written in Python, a programming language widely used for data science tasks. The Python-Pandas framework, which provides good data analysis capabilities was used for this research\cite{bib:pandas_doc}. While the code was written, care was taken to ensure that it would work for other records in the same format. 
 
 The goal of the methods used was to minimize the number of unique values in each column representing the same "real" value so that an equality match for different column combinations (see \fullref{sec:dup_detection_method}) could match them as duplicates.
+
+After each step of the pre-processing pipeline, all double spaces in the strings were removed as precaution.
 
 A complete conclusion of the pre-processing flow can be found in Fig.~\ref{fig:program_flow}
 \begin{figure}[htbp]
@@ -119,7 +121,7 @@ Further investigation of the alphabetic columns has shown that some values conta
 \end{lstlisting}
 This was then used to replace everything that matches with an empty string.
 
-After applying generic data clearing, the duplicates for each column(except "city") have grown. Especially for the "phone" column, it was noticeable that the detected duplicates have grown from seven to 116, which is quite good.
+After applying generic data clearing, the duplicates for each column have grown. Especially for the "phone" column, it was noticeable that the detected duplicates have grown from seven to 116, which is quite good.
 \subsection{Step 2: Clearing the city column}
 After the generic clearing, it was necessary to clean up the specifics of each column on its own. It was found that some city names were written inconsistently. For example, sometimes "la" was written instead of "los angeles". So every duplicate occurrence of a city name was mapped to a default value. This map looked like: 
 \begin{lstlisting}
@@ -128,7 +130,7 @@ After the generic clearing, it was necessary to clean up the specifics of each c
 \end{lstlisting}
 After applying this mapping, the "city" column was considered as cleared.
 
-When looking at the resulting metrics, it is noticeable that due to this allocation only two more duplicates were found in this column compared to the previous step. But this is okay, because the city column already contained 815 duplicates before and it is common that there aren't that many different values when viewing at restaurants that are only located at several citys.
+When looking at the resulting metrics, it is noticeable that due to this allocation only two more duplicates were found in this column compared to the previous step. But this is okay, because the city column already contained 817 duplicates before and it is common that there aren't that many different values when viewing at restaurants that are only located at several citys.
 \subsection{Step 3: Clearing the address column}
 The next step was to clean up the address column. When looking at the entries, it was found that many addresses have unnecessary attachments to describe the location of a restaurant more precisely (e.g. "3125 piedmont rd. near peachtree rd."). These had to be removed from the entries. To do this, it was decided to collect the words that separate the actual address from its description and remove everything behind it. The words found were: 
 \begin{lstlisting}
@@ -153,7 +155,7 @@ For the further cleaning of the "address" column it was necessary to map differe
 	"blv", "blvd" -> "boulevard" 
 	"st" -> "street"
 \end{lstlisting} 
-After applying these clearing steps to the "address" column, the unique values have decreased from 761 to 739, and the duplicates in this particular column have increased from 103 to 127 compared to the previous step, meaning that 24 more duplicate entries have been found in this column compared to the state before applying these clearing steps.
+After applying these clearing steps to the "address" column, the unique values have decreased from 761 to 739, and the duplicates in this particular column have increased from 116 to 125 compared to the previous step, meaning that nine more duplicated entries have been found in this column compared to the state before applying these clearing steps.
 \subsection{Step 4: Clearing the name column}
 The last column to be cleaned up was "name". Initially, a similar procedure as for the "address" column was used to remove more precise descriptions for the location. So everything after the words "between", "off", "near", "at", "in" and "of" was removed.
 
@@ -165,20 +167,22 @@ city_regex = re.compile('the|restaurant|and|new york city|' +'|'.join(map(re.esc
 \end{lstlisting}
 The last step was to arrange the values of the name entries alphabetically, because sometimes the restaurant names were written in different order. 
 
-After applying these transformations to the name column, the unique values have been reduced from 779 to 739. The duplicate values in this column have increased from 91 to 105.
+After applying these transformations to the name column, the unique values have been reduced from 773 to 746. The duplicate values in this column have increased from 91 to 118. The results that were achieved as a whole are discussed in \fullref{sec:results}.
 \subsection{Duplicate detection method} \label{sec:dup_detection_method}
 To detect duplicates, research has shown that most of them could be detected by selecting a combination of the columns ['address', 'name', 'phone'], ['address', 'city', 'name'] or ['name', 'city', 'phone'], in which each value must be the same to be considered a duplicate. All these three duplicate lists are then merged to obtain a complete set of duplicates from the record.
 \section{Results and possible improvements}\label{sec:results}
-The results obtained are displayed in \fullref{tab:results}. In total, without viewing the gold standard data set, 91 out of 112 duplicates were found in the restaurants data. This resulted in a recal of 0.82 and a precision of 1.0. 
+The results obtained are displayed in \fullref{tab:results}. In total, without viewing the gold standard data set, 101 out of 112 duplicates were found in the restaurants data. This resulted in a recal of 0.90 and a precision of 1.0. 
 
 The precision of 1.0 means that there were no false positives in our dataset, which is very good. 
 
-The recal of 0.82 means that after applying all pre-processing tasks and selecting duplicates with a combination of different columns, 82\% of the real duplicates were found. The approach used was rather simple and could be improved e.g. by better deciding which combination of columns to use to determine if an item is a duplicate. 
+The recal of 0.90 means that after applying all pre-processing tasks and selecting duplicates with a combination of different columns, 90\% of the real duplicates were found.
+
+The approach used was rather simple and could be improved e.g. by better deciding which combination of columns to use to determine if an item is a duplicate. 
 
 Another way to improve the results could have been to better clear the "city" column, so that districts like "hollywood" are mapped to the city they belong to. 
 
 Several researchers from the IEEE researched the issue of duplicate record detection and showed lots of different techniques to detect duplicates. They also tried a machine learning approach\cite{bib:foreign_research}.   
-\begin{table}[t]
+\begin{table}[h]
 	\begin{center}
 		\caption{Metrics for the reached results}
 		\label{tab:results} 
@@ -186,40 +190,48 @@ Several researchers from the IEEE researched the issue of duplicate record detec
 			\hline
 			Metric & At beginning & After step 1 & After step 2 & after step 3 & After step 4 \\ 
 			\hline\hline
-			Dupliactes in address &92&103&103&125&125\\
+			Dupliactes in address &92&116&116&125&125\\
 			\hline
-			Dupliactes in name &88&91&91&91&105\\
+			Dupliactes in name &88&91&91&91&118\\
 			\hline
-			Dupliactes in city &815&815&817&817&817\\
+			Dupliactes in city &815&817&819&819&819\\
 			\hline
 			Dupliactes in phone &7 & 116&116&116&116\\
 			\hline
-			Detected duplicates &24&68&82&83&91\\
+			Detected duplicates &24&68&82&83&101\\
 			\hline
-			True Positives &24&68&82&83&91  \\ 
+			True Positives &24&68&82&83&101  \\ 
 			\hline
-			True Negatives &752&752&752&752&752  \\  
+			True Negatives &752&752&752&752&11  \\  
 			\hline
 			False Positives &0&0&0&0&0\\  
 			\hline
 			False Negatives &88 &44&30&29&21\\  
 			\hline
-			Accuracy &0.9&0.97&0.97&0.97&0.98\\  
+			Accuracy &0.9&0.95&0.97&0.97&0.99\\  
 			\hline
 			Precision &1.0 & 1.0&1.0&1.0&1.0\\  
 			\hline
-			Recall &0.21&0.61&0.73&0.74&0.82\\
+			Recall &0.21&0.61&0.73&0.74&0.90\\
 			\hline
 		\end{tabular}
 	\end{center}
 \end{table}
 \section{Storing data into mongodb}
-After doing the research and reaching a reliable result, it's important to store the resulted data somewhere. For this it was chosen to use a cloud hosted mongodb database, because it's easy to use and fill mongodb from python. Whith mongodb it's possible to simply push python dictionaries to the database and it stores the data in a correct and reliable way. The cloud hosted approach was chosen to make it easy to access the data anytime and anywhere. 
+After researching and achieving a reliable result, it was important to store the obtained  data somewhere. For this purpose a cloud-hosted mongodb database was chosen. This was done because it is easy to use and mongodb is easily populated from python. With mongodb it is possible to simply push python dictionaries into the database to store them correctly and reliably. The cloud hosting approach was chosen to be able to access the data anytime and anywhere. 
 
 
-It was necessary to change the resulted entries back to the original values because in the preprocessing tasks there were many changes to the data, which nearly made it unreadable for humans. For this it was chosen to select the first occurring entry for a duplicate from the original dataset.
+Before the collected data was sent to mongodb cluser, it was necessary to change the resulting entries back to more readable values, because in the pre-processing tasks many changes were made to the data, which made them almost unreadable for humans. It was decided to select the first entry for a duplicate from the original data and append the values of "address", "city" and "phone" from the duplicate if they differ from the original. To decide whether one of the columns is the same, the pre-processed data was used.
 
 \section{Conclusion}
+In this thesis I have presented my results of duplicate recognition with the restaurant data set. This research was done on a learning basis, so the methods used are rather naive and can be improved. While writing this report, I have gained a clear understanding of why the task of duplicate recognition is so important and so difficult to achieve.
+
+Either way, the results obtained with an precision of 1.0 and a Recal of 0.9 for this data set are really good. Especially because there are no false positive results, which would have been a big disadvantage in this research.
+
+This report has not focused on performance. Many of the methods used could be improved so that the script works better with large amounts of data. One way to improve performance could be to use the mongodb aggregation framework, which is very powerful and could be used for many tasks in the preprocessing pipeline instead of the Pandas library. Another improvement would be the implementation of multi-threading, since many preprocessing tasks could easily be executed on multiple compute units.
+
+For further researches in this topic it would be intersesting to look into machine learning methods that could solve this issue. The other research which was refered in this paper\cite{bib:foreign_research} already looked into different methods to solve duplicate detection with machine learning. This report is from 2007, so a similar approach while using new machine learning algorithms could be a possible next step.
+
 \begin{thebibliography}{00}
 	\bibitem{bib:pandas_doc} "Python pandas library documentation", Accessed on: Jan. 9, 2020.[online]. Available: https://pandas.pydata.org/pandas-docs/stable/
 	\bibitem{bib:dataset} "Restaurants dataset", Accessed on: Jan 9, 2020.[online]. Available: https://hpi.de/naumann/projects/repeatability/datasets/restaurants-dataset.html
