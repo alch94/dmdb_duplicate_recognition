@@ -1,6 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 ### JupyterNotebooks template
-# gitignore template for Jupyter Notebooks
+# gitignore template for Jupyter Scripts
 # website: http://jupyter.org/
 
 .ipynb_checkpoints
