@@ -4,7 +4,12 @@ from more_itertools.more import only
 
 
 def print_metrics(restaurant_data, detected_duplicates, true_duplicates):
-    # Check the quality of the duplicate detection
+    """
+    Method to print all important metrics for the duplicate detection quality
+    :param restaurant_data: Cleared restaurant dataset
+    :param detected_duplicates: Custom detected duplicates
+    :param true_duplicates: True duplicates from the gold standard dataset
+    """
     restaurant_data_count = len(restaurant_data)
     my_duplicate_ids = detected_duplicates['id']
     my_duplicate_count = len(my_duplicate_ids)
@@ -31,6 +36,11 @@ def print_metrics(restaurant_data, detected_duplicates, true_duplicates):
 
 
 def remove_special_characters(restaurant_data):
+    """
+    Removes special characters from the columns
+    :param restaurant_data: Restaurant data where special characters have to be removed
+    :return: restaurant data without special characters
+    """
     restaurant_data.phone = restaurant_data.phone.map(lambda x: re.sub(r'\W+', '', x))
     restaurant_data.address = restaurant_data.address.map(lambda x: re.sub(r"[^a-zA-Z0-9 ]+", '', x))
     restaurant_data.name = restaurant_data.name.map(lambda x: re.sub(r"('s)|[^a-zA-Z0-9 ]+", '', x))
@@ -39,7 +49,11 @@ def remove_special_characters(restaurant_data):
 
 
 def get_duplicates_bool(restaurant_data):
-    # Get a Series of all duplicate entries
+    """
+    Prints several metrics and returns a pandas boolean series, which entry is a duplicate
+    :param restaurant_data: Cleared restaurant for which to get duplicates
+    :return: a pandas boolean Series that has a true value for each duplicate
+    """
     address_name_phone = ['address', 'name', 'phone']
     address_city_name = ['address', 'city', 'name']
     name_city_phone = ['name', 'city', 'phone']
@@ -73,6 +87,11 @@ def get_duplicates_bool(restaurant_data):
 
 
 def trim_multiple_blanks(restaurant_data):
+    """
+    Trims multiple blanks between words and at the beginning and end of each string
+    :param restaurant_data: Restaurant dataset
+    :return: Restaurant dataset without multiple blanks
+    """
     restaurant_data.name = restaurant_data.name.replace('\s+', ' ', regex=True)
     restaurant_data.address = restaurant_data.address.replace('\s+', ' ', regex=True)
     restaurant_data.city = restaurant_data.city.replace('\s+', ' ', regex=True)
@@ -85,6 +104,12 @@ def trim_multiple_blanks(restaurant_data):
 
 
 def get_final_dataset(restaurant_data_original, restaurant_data_cleared):
+    """
+    Gets and returns a final dataset without the recognized duplicates
+    :param restaurant_data_original: Original restaurants dataset which is not cleared
+    :param restaurant_data_cleared: Cleared restaurants dataset
+    :return: Restaurant dataset without duplicated entries that were recognized
+    """
     address_name_phone = ['address', 'name', 'phone']
     address_city_name = ['address', 'city', 'name']
     name_city_phone = ['name', 'city', 'phone']
@@ -92,6 +117,7 @@ def get_final_dataset(restaurant_data_original, restaurant_data_cleared):
     duplicates_address_city_name = restaurant_data_cleared.duplicated(subset=address_city_name, keep=False)
     duplicates_name_city_phone = restaurant_data_cleared.duplicated(subset=name_city_phone, keep=False)
     all_duplicates_bool = duplicates_address_name_phone | duplicates_address_city_name | duplicates_name_city_phone
+    # Get a dataset which only contains duplicates to get a better performance while looping
     only_duplicates = restaurant_data_cleared[all_duplicates_bool]
     duplicate_indices = {}
     for row1_idx, row1 in only_duplicates.iterrows():
